@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Multi-Agent System — Live Demo</title>
+<link rel="stylesheet" href="styles.css"/></head><body><main class="shell">
+<p class="tag">Production Agent Patterns · 4/5</p><h1>Multi-Agent System Pattern</h1>
+<p class="lede">Chief orchestrator delegates to specialist workers with critic gate.</p>
+<section class="panel"><button id="run" type="button">Run platform orchestration</button>
+<div id="answer" class="answer"></div><div id="trace" class="trace"></div></section></main>
+<script>
+const DEMO={answer:"Brief shipped after research + content + critic review.",events:[
+{name:"chief.intent",payload:{intent:"content_radar"}},
+{name:"worker.research",payload:{artifacts:["headlines","trends"]}},
+{name:"worker.content",payload:{artifacts:["linkedin_draft","substack_draft"]}},
+{name:"critic.review",payload:{quality:92,decision:"ship"}}]};
+const trace=document.getElementById("trace");
+document.getElementById("run").onclick=async()=>{trace.innerHTML="";document.getElementById("answer").textContent="";
+for(const e of DEMO.events){const el=document.createElement("div");el.className="event live";
+el.innerHTML=`<strong>${e.name}</strong><pre>${JSON.stringify(e.payload,null,2)}</pre>`;trace.appendChild(el);
+await new Promise(r=>setTimeout(r,700));el.classList.remove("live");el.classList.add("done");}
+document.getElementById("answer").textContent=DEMO.answer;};
+</script></body></html>
