@@ -1,7 +1,22 @@
 # Multi-Agent System Pattern
 
+**Part 4 of 5 — orchestrator + specialists with reviewer gates.** Used in **VAP Platform**.
 
-## Agent skills (Cursor + Codex)
+[▶ Live demo](https://multi-agent-system-pattern.vercel.app) · [Architecture](docs/ARCHITECTURE.md) · [Portfolio](https://venkat-ai.com/work) · [VAP case study](https://github.com/vpeetla-ai/ai-architecture-portfolio/blob/main/case-studies/venkat-ai-platform.md)
+
+## What this is
+
+Production reference for multi-agent collaboration — specialized roles, delegation, coordinated handoffs.
+
+## How we solve it
+
+Orchestrator-controlled routing with critic/reviewer gates before final output; live trace UI for interviews and teaching.
+
+## Case study & tradeoffs
+
+[venkat-ai.com/work](https://venkat-ai.com/work) · Tradeoffs in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+---
 
 Org skills: [vpeetla-ai-skills](https://github.com/vpeetla-ai/vpeetla-ai-skills). This repo includes `.cursor/skills/`, `AGENTS.md`, and `CONTEXT.md`.
 
