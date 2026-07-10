@@ -17,7 +17,7 @@
           </div>
         </a>
         <div class="header-actions">
-          <span class="status-badge">Deterministic demo</span>
+          <span class="status-badge status-badge--warn">Simulated · deterministic</span>
           <a href="https://github.com/vpeetla-ai/multi-agent-system-pattern" class="btn-ghost" style="padding:0.4rem 0.75rem;font-size:0.8rem;text-decoration:none">GitHub</a>
         </div>
       </div>
@@ -26,41 +26,114 @@
       <div class="page-hero">
         <p class="eyebrow">Orchestrator + specialists</p>
         <h1>Multi-Agent System Pattern</h1>
-        <p class="lede">Chief orchestrator delegates to research and content workers with a critic gate.</p>
+        <p class="lede">Chief orchestrator delegates to specialists with a critic gate — pick a scenario.</p>
       </div>
+
       <section class="panel">
-        <h2>Run demo</h2>
-        <div class="inline-actions"><button id="run" type="button">Run platform orchestration</button></div>
+        <h2>Run scenario</h2>
+        <p class="muted" id="scenario-desc"></p>
+        <div class="scenario-chips" id="chips" role="tablist" aria-label="Scenarios"></div>
+        <div class="inline-actions">
+          <button id="run" type="button" class="btn btn-primary">Run scenario</button>
+        </div>
+        <p class="microcopy">Metrics are <strong>simulated</strong> from the deterministic stub — not live LLM usage. Teach the pattern here; run open-ended work in VAP / OmniForge.</p>
+        <div class="metrics-grid" id="metrics" aria-live="polite">
+          <div class="metric"><p class="metric__label">Steps</p><p class="metric__value" data-k="steps">—</p></div>
+          <div class="metric"><p class="metric__label">Workers</p><p class="metric__value" data-k="metric2">—</p></div>
+          <div class="metric"><p class="metric__label">Stop reason</p><p class="metric__value" data-k="stop">—</p></div>
+          <div class="metric"><p class="metric__label">Latency (sim)</p><p class="metric__value" data-k="latency">—</p></div>
+        </div>
         <div id="answer" class="answer"></div>
         <div id="trace" class="trace-events"></div>
+      </section>
+
+      <section class="panel compose-cta">
+        <h2>Run the system</h2>
+        <p class="muted">This repo teaches one pattern. Compose it into a governed multi-agent OS or multimodal platform.</p>
+        <div class="inline-actions">
+          <a class="btn btn-primary" href="https://venkat-ai-platform.vercel.app">Open VAP</a>
+          <a class="btn btn-ghost" href="https://omniforge-flame.vercel.app">Open OmniForge</a>
+        </div>
       </section>
     </main>
     <footer class="app-footer">Multi-Agent pattern · <a href="https://github.com/vpeetla-ai/multi-agent-system-pattern">vpeetla-ai</a></footer>
     <script>
-      const DEMO = {
-        answer: "Brief shipped after research + content + critic review.",
-        events: [
-          { name: "chief.intent", payload: { intent: "content_radar" } },
-          { name: "worker.research", payload: { artifacts: ["headlines", "trends"] } },
-          { name: "worker.content", payload: { artifacts: ["linkedin_draft", "substack_draft"] } },
-          { name: "critic.review", payload: { quality: 92, decision: "ship" } },
-        ],
-      };
+      const DELAY_MS = 700;
+      const METRIC2_KEY = 'workers';
+      const SCENARIOS = [
+        {"id": "content", "label": "Content radar", "blurb": "Research + content workers, critic ships the brief.", "answer": "Brief shipped after research + content + critic review.", "metrics": {"steps": 4, "workers": 2, "stop_reason": "critic_ship", "latency_ms": 2800}, "events": [{"name": "chief.intent", "payload": {"intent": "content_radar"}}, {"name": "worker.research", "payload": {"artifacts": ["headlines", "trends"]}}, {"name": "worker.content", "payload": {"artifacts": ["linkedin_draft", "substack_draft"]}}, {"name": "critic.review", "payload": {"quality": 92, "decision": "ship"}}]},
+        {"id": "research_only", "label": "Research only", "blurb": "Chief routes to research only — no publish path.", "answer": "Research packet ready; no content worker invoked.", "metrics": {"steps": 3, "workers": 1, "stop_reason": "intent_complete", "latency_ms": 2100}, "events": [{"name": "chief.intent", "payload": {"intent": "research_digest"}}, {"name": "worker.research", "payload": {"artifacts": ["sources", "summary"]}}, {"name": "chief.complete", "payload": {"decision": "return_packet"}}]},
+        {"id": "block", "label": "Critic blocks", "blurb": "Critic rejects drafts — do not ship.", "answer": "Blocked: critic quality 61 — revise before ship.", "metrics": {"steps": 4, "workers": 2, "stop_reason": "critic_block", "latency_ms": 2800}, "events": [{"name": "chief.intent", "payload": {"intent": "content_radar"}}, {"name": "worker.research", "payload": {"artifacts": ["headlines"]}}, {"name": "worker.content", "payload": {"artifacts": ["draft_v1"]}}, {"name": "critic.review", "payload": {"quality": 61, "decision": "block", "findings": ["Unsourced claims"]}}]}
+      ];
+
+      let selected = 0;
+      let running = false;
+      const chips = document.getElementById("chips");
+      const desc = document.getElementById("scenario-desc");
       const trace = document.getElementById("trace");
-      document.getElementById("run").onclick = async () => {
+      const answer = document.getElementById("answer");
+      const runBtn = document.getElementById("run");
+
+      function renderChips() {
+        chips.innerHTML = "";
+        SCENARIOS.forEach((s, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "scenario-chip" + (i === selected ? " is-active" : "");
+          b.textContent = s.label;
+          b.setAttribute("role", "tab");
+          b.setAttribute("aria-selected", i === selected ? "true" : "false");
+          b.onclick = () => {
+            if (running) return;
+            selected = i;
+            renderChips();
+            resetView();
+          };
+          chips.appendChild(b);
+        });
+        desc.textContent = SCENARIOS[selected].blurb;
+      }
+
+      function setMetrics(m) {
+        const root = document.getElementById("metrics");
+        root.querySelector('[data-k="steps"]').textContent = m ? String(m.steps) : "—";
+        root.querySelector('[data-k="metric2"]').textContent = m ? String(m[METRIC2_KEY]) : "—";
+        root.querySelector('[data-k="stop"]').textContent = m ? m.stop_reason : "—";
+        root.querySelector('[data-k="latency"]').textContent = m ? m.latency_ms + " ms" : "—";
+      }
+
+      function resetView() {
         trace.innerHTML = "";
-        document.getElementById("answer").textContent = "";
-        for (const e of DEMO.events) {
+        answer.textContent = "";
+        setMetrics(null);
+      }
+
+      async function runScenario() {
+        if (running) return;
+        running = true;
+        runBtn.disabled = true;
+        resetView();
+        const demo = SCENARIOS[selected];
+        const t0 = performance.now();
+        for (const event of demo.events) {
           const el = document.createElement("div");
           el.className = "event live";
-          el.innerHTML = `<strong>${e.name}</strong><pre>${JSON.stringify(e.payload, null, 2)}</pre>`;
+          el.innerHTML = `<strong>${event.name}</strong><pre>${JSON.stringify(event.payload, null, 2)}</pre>`;
           trace.appendChild(el);
-          await new Promise((r) => setTimeout(r, 700));
+          await new Promise((r) => setTimeout(r, DELAY_MS));
           el.classList.remove("live");
           el.classList.add("done");
         }
-        document.getElementById("answer").textContent = DEMO.answer;
-      };
+        const elapsed = Math.round(performance.now() - t0);
+        answer.textContent = demo.answer;
+        setMetrics({ ...demo.metrics, latency_ms: demo.metrics.latency_ms || elapsed });
+        running = false;
+        runBtn.disabled = false;
+      }
+
+      runBtn.onclick = runScenario;
+      renderChips();
+      resetView();
     </script>
   </body>
 </html>
