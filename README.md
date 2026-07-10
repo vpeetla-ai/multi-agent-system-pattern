@@ -10,7 +10,7 @@
 
 ## What this is
 
-Production reference for multi-agent collaboration — specialized roles, delegation, coordinated handoffs.
+Teaching reference for multi-agent collaboration — specialized roles, delegation, coordinated handoffs.
 
 ## How we solve it
 
@@ -32,6 +32,8 @@ git clone https://github.com/vpeetla-ai/vpeetla-ai-skills.git
 ---
 
 
+> **Scope:** Curriculum stub with deterministic tests and a live trace viewer — not a production agent fleet. Compose into [Venkat AI Platform](https://github.com/vpeetla-ai/venkat-ai-platform) for governed graphs.
+
 ## Implementation status
 
 | Component | Status | Notes |
@@ -45,12 +47,12 @@ git clone https://github.com/vpeetla-ai/vpeetla-ai-skills.git
 
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://multi-agent-system-pattern.vercel.app)
-[![Part of Production Agent Patterns](https://img.shields.io/badge/series-Production%20Agent%20Patterns-purple)](https://github.com/vpeetla-ai/multi-agent-system-pattern)
+[![Part of Curriculum Agent Patterns](https://img.shields.io/badge/series-Curriculum%20Agent%20Patterns-purple)](https://github.com/vpeetla-ai/multi-agent-system-pattern)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Part 4 of 5** in the [Production Agent Patterns](https://github.com/vpeetla-ai/react-agent-pattern) series.
+**Part 4 of 5** in the [Curriculum Agent Patterns](https://github.com/vpeetla-ai/react-agent-pattern) series.
 
-Production-grade reference implementation of the **Multi-Agent System** pattern — specialized roles, delegation, and coordinated handoffs between agents.
+Curriculum teaching stub (compose into VAP for production graphs) of the **Multi-Agent System** pattern — specialized roles, delegation, and coordinated handoffs between agents.
 
 | # | Pattern | Repository | Use when |
 |---|---------|------------|----------|
