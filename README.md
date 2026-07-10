@@ -2,9 +2,9 @@
 
 
 <!-- vpeetla-tech-stack:start -->
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square)]() [![LangGraph](https://img.shields.io/badge/LangGraph-9333EA?style=flat-square)]() [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square)]() [![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square)]()
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square)]() [![Curriculum stub](https://img.shields.io/badge/Curriculum-stub-0EA5E9?style=flat-square)]() [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square)]() [![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square)]()
 <!-- vpeetla-tech-stack:end -->
-**Part 4 of 5 — orchestrator + specialists with reviewer gates.** Used in **VAP Platform**.
+**Curriculum teaching stub for Multi-Agent collaboration** — orchestrator + specialists with reviewer gates. Pattern used in **VAP Platform**.
 
 [▶ Live demo](https://multi-agent-system-pattern.vercel.app) · [Architecture](docs/ARCHITECTURE.md) · [Portfolio](https://venkat-ai.com/work) · [VAP case study](https://github.com/vpeetla-ai/ai-architecture-portfolio/blob/main/case-studies/venkat-ai-platform.md)
 
@@ -62,7 +62,7 @@ Curriculum teaching stub (compose into VAP for production graphs) of the **Multi
 | 4 | **Multi-Agent** | **this repo** | Specialized role delegation |
 | 5 | Swarm | [swarm-agent-pattern](https://github.com/vpeetla-ai/swarm-agent-pattern) | Parallel autonomous agents |
 
-[▶ Live demo](https://multi-agent-system-pattern.vercel.app) · [📖 Full series roadmap](https://github.com/vpeetla-ai/ai-content-factory/blob/main/docs/agent-patterns/ROADMAP.md) · [🚀 See in production — AI Content Factory](https://ai-content-factory-iota.vercel.app)
+[▶ Live demo](https://multi-agent-system-pattern.vercel.app) · [📖 Full series roadmap](https://github.com/vpeetla-ai/ai-content-factory/blob/main/docs/agent-patterns/ROADMAP.md) · [Compose in production — AI Content Factory (separate repo)](https://ai-content-factory-iota.vercel.app)
 
 ---
 
@@ -91,11 +91,11 @@ cp .env.example .env
 
 See [docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## See it in production
+## Path to production (compose — not this stub)
 
-[AI Content Factory](https://github.com/vpeetla-ai/ai-content-factory) uses this pattern at scale: Research → Content → SEO/Visual → HITL → Publisher agents on LangGraph.
+**This repo is a curriculum stub.** For production composition, see [AI Content Factory](https://github.com/vpeetla-ai/ai-content-factory): Research → Content → SEO/Visual → HITL → Publisher agents on LangGraph.
 
-[▶ Live demo](https://ai-content-factory-iota.vercel.app)
+[▶ ACF live demo](https://ai-content-factory-iota.vercel.app)
 
 ## Related
 
