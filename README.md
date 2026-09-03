@@ -44,6 +44,7 @@ git clone https://github.com/vpeetla-ai/vpeetla-ai-skills.git
 | MCP tool bridge | ❌ | See LoopForge / VAP MCP docs |
 | AegisAI gateway | ❌ | No side effects in pattern demo |
 | Pytest regression | ✅ | `pytest -q` in repo |
+| Reviewer-gate benchmark | ✅ | Real, executed: complete roster 100% (8/8) vs single-generalist 0% (0/8) reviewer-approval rate — [receipt](docs/receipts/benchmark.md) |
 
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://multi-agent-system-pattern.vercel.app)
@@ -81,6 +82,7 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 python -m multi_agent_system_pattern
 pytest
+python scripts/benchmark_reviewer_gate.py  # real reviewer-gate benchmark — see docs/receipts/benchmark.md
 ```
 
 Runs without external API keys using deterministic stubs.
