@@ -40,6 +40,84 @@ User request
   -> orchestrator returns final output
 ```
 
+The diagram below is the same flow drawn from the actual code in
+`src/multi_agent_system_pattern/orchestrator.py`
+(`MultiAgentOrchestrator.run()`): agents run **in the order they were
+constructed**, each one only reads/writes `SharedContext`, and the
+`ReviewerAgent`'s approval is a plain presence-check — not a judgment call —
+on which roles already wrote an artifact.
+
+```mermaid
+flowchart TD
+    A["User request"] --> B["SharedContext(request)"]
+    B --> C["for agent in self.agents:<br/>context.add(agent.role, agent.run(context))"]
+    C --> D["ResearchAgent.run(context)<br/>writes role='research'"]
+    D --> E["AnalystAgent.run(context)<br/>reads research count, writes role='analysis'"]
+    E --> F["WriterAgent.run(context)<br/>writes role='writer'"]
+    F --> G["ReviewerAgent.run(context)<br/>writes role='reviewer'"]
+    G --> H{"review.startswith('approved')?<br/>i.e. research, analysis, writer<br/>all present in context"}
+    H -->|yes| I["final_output = context.by_role('writer')[-1]<br/>approved=True"]
+    H -->|no| J["final_output = review text itself<br/>('rejected: missing specialist artifacts')<br/>approved=False"]
+```
+
+Two things worth being explicit about, since the diagram makes them visible
+where the prose could gloss over them:
+
+- Agent order is **whatever order the caller passed into
+  `MultiAgentOrchestrator(agents)`** — the orchestrator does not reorder or
+  schedule by dependency; it just iterates `self.agents` and appends each
+  result to `SharedContext`.
+- The reviewer gate is a **mechanical completeness check**
+  (`ReviewerAgent.run()` looks for non-empty `by_role("research")`,
+  `by_role("analysis")`, and `by_role("writer")`), not a quality judgment —
+  it approves an empty-but-present artifact from each role just as readily
+  as a good one.
+
+## Reviewer Gate: Orchestrator vs. Single-Generalist Baseline (Benchmark)
+
+`scripts/benchmark_reviewer_gate.py` runs 20 real scenarios against the
+actual `MultiAgentOrchestrator` / `ReviewerAgent` / `SharedContext` code
+above, plus a new `GeneralistAgent` baseline (in
+`src/multi_agent_system_pattern/benchmark.py`) that answers a request
+directly, in one pass, instead of producing separate research/analysis/writer
+artifacts. Full receipt: [`docs/receipts/benchmark.md`](receipts/benchmark.md).
+
+```mermaid
+flowchart TD
+    subgraph FULL["Complete specialist roster (8 scenarios)"]
+        direction TB
+        F1["[ResearchAgent, AnalystAgent, WriterAgent, ReviewerAgent]"] --> F2["research + analysis + writer<br/>all present in SharedContext"]
+        F2 --> F3["ReviewerAgent: approved<br/>8/8 = 100%"]
+    end
+    subgraph GEN["Single-generalist baseline (8 scenarios)"]
+        direction TB
+        G1["[GeneralistAgent, ReviewerAgent]"] --> G2["only role='generalist' present —<br/>no research/analysis/writer artifacts"]
+        G2 --> G3["ReviewerAgent: rejected<br/>0/8 = 0%"]
+    end
+    subgraph INC["Incomplete roster (2 scenarios)"]
+        direction TB
+        I1["[ResearchAgent, WriterAgent, ReviewerAgent]<br/>AnalystAgent left out"]
+        I1 --> I2["analysis artifact missing"]
+        I2 --> I3["ReviewerAgent: rejected<br/>0/2 = 0%"]
+    end
+```
+
+**Real headline numbers, both measured against the same unmodified
+`ReviewerAgent.run()`:** orchestrator with the complete specialist roster
+clears the reviewer gate on **100%** of scenarios (8/8); the single-generalist
+baseline, evaluated by that identical gate, clears it on **0%** (0/8); an
+orchestrator run with `AnalystAgent` deliberately omitted also clears it on
+**0%** (0/2) — confirming the gate rejects an incomplete roster the same way
+it rejects a generalist that never produced role-tagged artifacts in the
+first place. A separate duplicate-role-guard check (2/2 scenarios) confirms
+`MultiAgentOrchestrator.__init__`'s `ValueError("Agent roles must be
+unique")` fires on construction, not silently at runtime.
+
+This benchmark measures the reviewer gate's **mechanical** presence-check
+behavior, not real output quality — every `Agent` here, including
+`GeneralistAgent`, is a deterministic stub with no external API calls, same
+as the rest of this repo.
+
 ## State Model
 
 Shared context should be explicit and typed. Production implementations should distinguish:
