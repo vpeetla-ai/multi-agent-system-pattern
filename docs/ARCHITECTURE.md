@@ -2,7 +2,7 @@
 
 ## Context
 
-Large AI workflows often require different perspectives: research, analysis, writing, review, domain validation, data operations, and customer-context handling. A single agent can attempt all of this, but the result is difficult to tune, observe, secure, and scale. Multi-agent systems divide responsibility into specialized roles coordinated by an orchestrator.
+Large AI workflows need different perspectives — research, analysis, writing, review, domain validation, data ops, customer context. One agent can try to cover all of it, but the result is hard to tune, observe, secure, or scale. Split the work into specialized roles under an orchestrator instead.
 
 ## Decision
 
@@ -13,7 +13,7 @@ This repo implements a centralized multi-agent system:
 3. `MultiAgentOrchestrator` decides execution order.
 4. `ReviewerAgent` gates the final output.
 
-The orchestrator is intentionally centralized. That is the right default for enterprise systems because it provides clear control over sequencing, policy enforcement, cost, and auditability.
+The orchestrator is intentionally centralized — that's the right default for enterprise systems: clear control over sequencing, policy enforcement, cost, and auditability.
 
 ## When To Use
 
@@ -77,8 +77,8 @@ where the prose could gloss over them:
 
 `scripts/benchmark_reviewer_gate.py` runs 20 real scenarios against the
 actual `MultiAgentOrchestrator` / `ReviewerAgent` / `SharedContext` code
-above, plus a new `GeneralistAgent` baseline (in
-`src/multi_agent_system_pattern/benchmark.py`) that answers a request
+above. It adds one new baseline — `GeneralistAgent` (in
+`src/multi_agent_system_pattern/benchmark.py`) — that answers a request
 directly, in one pass, instead of producing separate research/analysis/writer
 artifacts. Full receipt: [`docs/receipts/benchmark.md`](receipts/benchmark.md).
 
@@ -103,13 +103,15 @@ flowchart TD
 ```
 
 **Real headline numbers, both measured against the same unmodified
-`ReviewerAgent.run()`:** orchestrator with the complete specialist roster
-clears the reviewer gate on **100%** of scenarios (8/8); the single-generalist
-baseline, evaluated by that identical gate, clears it on **0%** (0/8); an
-orchestrator run with `AnalystAgent` deliberately omitted also clears it on
-**0%** (0/2) — confirming the gate rejects an incomplete roster the same way
-it rejects a generalist that never produced role-tagged artifacts in the
-first place. A separate duplicate-role-guard check (2/2 scenarios) confirms
+`ReviewerAgent.run()`:**
+
+- Complete specialist roster: reviewer gate passes **100%** of scenarios (8/8).
+- Single-generalist baseline, same gate: **0%** (0/8).
+- Orchestrator with `AnalystAgent` deliberately left out: also **0%** (0/2) —
+  the gate rejects an incomplete roster the same way it rejects a generalist
+  that never produced role-tagged artifacts in the first place.
+
+A separate duplicate-role-guard check (2/2 scenarios) confirms
 `MultiAgentOrchestrator.__init__`'s `ValueError("Agent roles must be
 unique")` fires on construction, not silently at runtime.
 
